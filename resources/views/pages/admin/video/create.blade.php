@@ -17,7 +17,7 @@
             <h3 class="card-title">Tambah Data Video</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.video.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="formSubmit" action="{{ route('admin.video.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-sm-6">
@@ -47,12 +47,15 @@
                         </div>
 
                         <div class="mb-2">
-                            <label for="" class="form-label">Type Media</label>
+                            <label for="">Type Media</label>
                             <select name="type" id="type" class="form-control">
                                 <option value="">Pilih Type Media</option>
                                 <option value="image">Image</option>
                                 <option value="video">Video</option>
                             </select>
+                             @error('type')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-2">
@@ -60,6 +63,14 @@
                             <input type="file" name="video" id="video" accept="video/*,image/png,image/jpg"
                                 class="form-control">
                             @error('video')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="" class="form-label">Thumbnail (Opsional)</label>
+                            <input type="file" name="thumbnail" id="thumbnail" class="form-control">
+                            @error('thumbnail')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -74,8 +85,48 @@
                     </div>
                 </div>
 
-                <button class="btn btn-sm btn-success">Simpan</button>
+                <button id="submitBtn" class="btn btn-sm btn-success">Simpan</button>
+                <span id="loadingSpinner" class="spinner-border text-info ml-2 d-none" role="status">
+                    <span class="sr-only">Memproses...</span>
+                </span>
+
+                <div class="progress mt-2 d-none" id="loadingProgressBar">
+                    <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                        aria-valuemax="100">0%</div>
+                </div>
+
             </form>
         </div>
     </div>
+
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('formSubmit').addEventListener('submit', function(e) {
+            // Tampilkan spinner
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerHTML = "Menyimpan...";
+
+            // Tampilkan progress bar
+            var progress = 0;
+            var progressBar = document.getElementById('loadingProgressBar');
+            progressBar.classList.remove('d-none');
+            progressBar.style.width = progress + '%';
+            progressBar.innerHTML = progress + '%';
+
+            // Simulasi proses (karena upload sebenernya terjadi di server)
+            var interval = setInterval(function() {
+                if (progress < 100) {
+                    progress++;
+                    progressBar.style.width = progress + '%';
+                    progressBar.innerHTML = progress + '%';
+                } else {
+                    clearInterval(interval);
+                    // Setelah 100% boleh diberhentikan
+                }
+            }, 50);
+        });
+    </script>
+@endpush

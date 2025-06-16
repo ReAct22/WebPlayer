@@ -39,7 +39,8 @@ class VideoController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'video' => 'required|file|mimes:png,jpg,mp4,mov,avi,mkv|max:204800',
-            'type' => 'required'
+            'type' => 'required',
+            'thumbnail' => 'nullable|mimes:png,jpg'
         ]);
 
         try {
@@ -49,14 +50,21 @@ class VideoController extends Controller
                 $videoPath = $file->storeAs('videos', $fileName, 'public');
             }
 
+            if($request->hasFile('thumbnail')){
+                $file = $request->file('thumbnail');
+                $filethumb = time() . '-'. $file->getClientOriginalName();
+                $thumbPath = $file->storeAs('thumb', $filethumb, 'public');
+            }
+
             Video::create([
                 'category_id' => $request->category_id,
                 'judul' => $request->judul,
                 'slug' => Str::slug($request->judul),
-                'deskripsi' => $request->deskripsi ?? null,
-                'video' => $videoPath ?? null,
+                'deskripsi' => $request->deskripsi ?? 'null',
+                'video' => $videoPath ?? 'null',
                 'user_id' => 0,
-                'type' => $request->type
+                'type' => $request->type,
+                'thumbnail' => $thumbPath ?? ''
             ]);
 
             return redirect()->route('admin.video.index')->with('success', 'Data berhasil ditambahkan');
@@ -115,6 +123,16 @@ class VideoController extends Controller
                 $videoPath = $video->video;
             }
 
+            if($request->hasFile('thumbnail')){
+                if($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)){
+                    Storage::disk('public')->delete($video->thumbnail);
+                }
+                $file = $request->file('thumbnail');
+                $thumbPath = $file->store('thumb', 'public');
+            } else {
+                $thumbPath = $video->thumbnail;
+            }
+
             // Update data video
             $video->update([
                 'category_id' => $request->category_id,
@@ -123,7 +141,8 @@ class VideoController extends Controller
                 'deskripsi' => $request->deskripsi ?? '',
                 'video' => $videoPath,
                 'user_id' =>  0, // fallback 0 kalau belum login
-                'type' => $request->type
+                'type' => $request->type,
+                'thumbnail' => $thumbPath ?? 'null'
             ]);
 
             return redirect()->route('admin.video.index')->with('success', 'Video berhasil diperbarui.');
@@ -145,6 +164,10 @@ class VideoController extends Controller
         // Hapus file video dari storage jika ada
         if ($video->video && Storage::disk('public')->exists($video->video)) {
             Storage::disk('public')->delete($video->video);
+        }
+
+        if($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)){
+            Storage::disk('public')->delete($video->thumbnail);
         }
 
         // Hapus data dari database (soft delete)

@@ -8,7 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to bottom right, #e0f7fa, #fff);
+            background-image: url("{{ asset('images/bg-image.jpg') }}");
+
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+
+            margin: 0;
+            padding: 0;
         }
 
         .hamburger {
@@ -46,7 +53,7 @@
 </head>
 
 <body>
-     @yield('content')
+    @yield('content')
 
 
 

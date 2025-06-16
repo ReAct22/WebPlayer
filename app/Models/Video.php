@@ -17,7 +17,8 @@ class Video extends Model
         'deskripsi',
         'video',
         'user_id',
-        'type'
+        'type',
+        'thumbnail'
     ];
 
     public function category(): BelongsTo
