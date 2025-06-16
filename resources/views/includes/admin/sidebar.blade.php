@@ -2,7 +2,7 @@
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
       <img src="{{asset('/logo/Logo Gogomall .png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">{{$SITE_NAME}}</span>
+      <span class="brand-text font-weight-light">WebPlayer</span>
     </a>
 
     <!-- Sidebar -->
