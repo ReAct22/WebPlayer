@@ -173,6 +173,6 @@ class VideoController extends Controller
         // Hapus data dari database (soft delete)
         $video->delete();
 
-        return redirect()->route('videos.index')->with('success', 'Video berhasil dihapus.');
+        return redirect()->route('admin.video.index')->with('success', 'Video berhasil dihapus.');
     }
 }

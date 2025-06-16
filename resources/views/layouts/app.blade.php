@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Testimoni Laser</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
             background-image: url("{{ asset('images/bg-image.jpg') }}");
@@ -13,22 +14,23 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-
+            width: 100vw;
+            height: 100vh;
             margin: 0;
             padding: 0;
         }
 
-        .hamburger {
+        /* .hamburger {
             position: absolute;
             top: 10px;
             right: 10px;
             cursor: pointer;
             z-index: 1050;
-        }
+        } */
 
         #categorySelect {
             display: none;
-            position: absolute;
+            /* position: absolute; */
             top: 50px;
             right: 10px;
             z-index: 1040;

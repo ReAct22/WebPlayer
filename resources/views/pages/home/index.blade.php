@@ -1,52 +1,87 @@
 @extends('layouts.app')
 @section('title', 'Home')
 @section('content')
-    <!-- Hamburger Menu -->
-    <div class="hamburger">
-        <button class="btn btn-outline-dark" onclick="toggleSelect()">☰</button>
-        <select id="categorySelect" class="form-select mt-2" onchange="loadPlaylist()">
-            <option value="">Pilih Kategori</option>
-        </select>
-    </div>
+    <button class="btn btn-primary m-3 float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+        aria-controls="offcanvasRight" onclick="toggleSelect()">☰</button>
 
-    <div class="container mt-5">
+
+    <div class="container mt-0">
         <div class="row">
-            <!-- Carousel -->
-            <div id="carouselColumn" class="col-md-8">
-                <div id="mainCarousel" class="carousel slide">
-                    <div class="carousel-inner" id="carouselContent">
-                        <!-- Item akan di-load secara dinamis -->
+            <div
+                style="position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center">
+                <div id="carouselColumn" class="col-md-12">
+                    <div id="mainCarousel" class="carousel slide">
+                        <div class="carousel-inner" id="carouselContent">
+                            <!-- Item akan di-load secara dinamis -->
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+                        </button>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel"
-                        data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel"
-                        data-bs-slide="next">
-                        <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
-                    </button>
+                </div>
+            </div>
+            <!-- Carousel -->
+
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasRightLabel">Playlist</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <!-- Control sidebar content goes here -->
+                    {{-- <h5>Pilih Kategori</h5> --}}
+                    <select id="categorySelect" class="form-control" class="form-select mt-2" onchange="loadPlaylist()">
+                        <option value="">Pilih Kategori</option>
+                    </select>
+
+
+                    {{-- <h5>Playlist</h5> --}}
+                    <div id="playlistContainer">
+                        <div id="playlist" class="d-flex flex-column gap-2 mt-2">
+                            <!-- Item playlist akan tampil di sini -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Playlist Thumbnail -->
-            <div id="playlistColumn" class="col-md-4">
-                <h5>Playlist</h5>
-                <button id="togglePlaylistBtn" class="btn btn-secondary mb-2">Sembunyikan Playlist</button>
+            {{-- <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+                <h5>Pilih Kategori</h5>
+                <select id="categorySelect" class="form-select mt-2" onchange="loadPlaylist()">
+                    <option value="">Pilih Kategori</option>
+                </select>
 
+                <h5>Playlist</h5>
                 <div id="playlistContainer">
                     <div id="playlist" class="d-flex flex-column gap-2 mt-2">
                         <!-- Item playlist akan tampil di sini -->
                     </div>
                 </div>
 
-            </div>
+            </aside> --}}
+
         </div>
     </div>
 
 @endsection
 
 @push('script-home')
-    <script>
+    {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
             const playlistContainer = document.getElementById("playlistContainer");
 
@@ -84,7 +119,7 @@
 
             // Kode yang lain sesuai yang Anda punya...
         });
-    </script>
+    </script> --}}
 
     <script>
         let playlists = {};
@@ -154,7 +189,7 @@
         function toggleSelect() {
             const select = document.getElementById("categorySelect");
 
-            select.style.display = select.style.display === "block" ? "none" : "block";
+            select.style.display = 'block';
 
         }
 
@@ -172,17 +207,6 @@
 
                 if (index === 0) newItem.classList.add("active");
 
-                // Judul di atas
-                if (item.judul) {
-                    const title = document.createElement("h5");
-
-                    title.textContent = item.judul;
-
-                    title.className = "media-title mb-2";
-
-                    newItem.appendChild(title);
-                }
-
                 // Media (Video/Foto) di tengah
                 if (item.type === 'video') {
                     const video = document.createElement("video");
@@ -194,9 +218,9 @@
                     video.autoplay = (index === 0);
 
                     video.innerHTML = `
-    <source src="${item.src}" type="video/mp4">
-    Browser Anda tidak mendukung video.
-    `;
+                <source src="${item.src}" type="video/mp4">
+                Browser Anda tidak mendukung video.
+            `;
 
                     // Saat video mulai diputar -> pause carousel
                     video.addEventListener("play", () => {
@@ -221,6 +245,7 @@
 
                     newItem.appendChild(video);
                 } else {
+                    // Gambar
                     const img = document.createElement("img");
 
                     img.src = item.src;
@@ -230,21 +255,10 @@
                     newItem.appendChild(img);
                 }
 
-                // Deskripsi di bawah
-                if (item.deskripsi) {
-                    const desc = document.createElement("p");
-
-                    desc.textContent = item.deskripsi;
-
-                    desc.className = "media-description mt-2";
-
-                    newItem.appendChild(desc);
-                }
-
                 carouselContent.appendChild(newItem);
             });
 
-            // Setelah diberi item, inisialisasi carousel TANPA autoplay
+            // Setelah diberi item, inisialisasi carousel
             const carouselInit = new bootstrap.Carousel(carousel, {
                 interval: false,
                 ride: false,
@@ -267,9 +281,23 @@
 
                 if (activeVideo) {
                     activeVideo.play().catch((err) => console.error(err)); // kadang autoplay diblock browser
+                } else {
+                    // Kalau bukan video (gambar), maka pindah setelah 10 menit
+                    setTimeout(function() {
+                        new bootstrap.Carousel(carousel).next();
+                    }, 10000);
                 }
             });
+
+            // Jika slide pertama bukan video, juga diberi timeout
+            if (items.length > 0 && items[0].type !== 'video') {
+                setTimeout(function() {
+                    new bootstrap.Carousel(carousel).next();
+                }, 10000);
+            }
         }
+
+
 
 
 
@@ -303,9 +331,6 @@
 
                     thumb.alt = item.title ? item.title : "thumbnail video";
 
-                    thumb.width = 130; // ukuran lebar 230px
-                    thumb.height = 229; // ukuran tinggi (opsional
-
                 } else {
                     thumb = document.createElement("img");
 
@@ -315,15 +340,12 @@
 
                     thumb.alt = item.title ? item.title : "thumbnail foto";
 
-                    thumb.width = 130; // ukuran lebar 230px
-                    thumb.height = 229; // ukuran tinggi (opsional
-
                 }
 
                 // Judul video
                 const title = document.createElement("span");
 
-                title.textContent = item.judul ? item.judul : "Tanpa judul";
+                // title.textContent = item.judul ? item.judul : "Tanpa judul";
 
                 title.className = "playlist-title";
 

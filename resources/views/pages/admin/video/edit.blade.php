@@ -98,7 +98,7 @@
                         {{-- preview thumbnail --}}
                         <div class="mb-2">
                             <label class="form-label">Preview thumbnail Saat Ini</label><br>
-                            <img src="{{ asset('storage/', $video->thumbnail) }}" alt="" width="200"
+                            <img src="{{ asset('storage/'. $video->thumbnail) }}" alt="" width="200"
                                 height="200" class="img-thumbnail">
                         </div>
 
