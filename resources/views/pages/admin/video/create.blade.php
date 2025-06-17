@@ -60,7 +60,7 @@
 
                         <div class="mb-2">
                             <label for="video" class="form-label">Upload Media</label>
-                            <input type="file" name="file" id="file" accept="*" class="form-control" class="form-control">
+                            <input type="file" name="video" id="file" accept="*" class="form-control" class="form-control">
                             @error('video')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
