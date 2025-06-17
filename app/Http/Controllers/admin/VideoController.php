@@ -36,7 +36,7 @@ class VideoController extends Controller
     {
         $request->validate([
             'category_id' => 'required|integer',
-            'judul' => 'required|string|max:255',
+            'judul' => 'nullable|string|max:255',
             'deskripsi' => 'nullable|string',
             'video' => 'required|file|mimes:png,jpg,mp4,mov,avi,mkv|max:204800',
             'type' => 'required',
@@ -58,7 +58,7 @@ class VideoController extends Controller
 
             Video::create([
                 'category_id' => $request->category_id,
-                'judul' => $request->judul,
+                'judul' => $request->judul ?? 'null',
                 'slug' => Str::slug($request->judul),
                 'deskripsi' => $request->deskripsi ?? 'null',
                 'video' => $videoPath ?? 'null',
@@ -99,7 +99,7 @@ class VideoController extends Controller
     {
         $request->validate([
             'category_id' => 'required|integer',
-            'judul' => 'required|string|max:255',
+            'judul' => 'nullable|string|max:255',
             'deskripsi' => 'nullable|string',
             'video' => 'nullable|file|mimes:png,jpg,mp4,mov,avi,mkv|max:204800', // video optional
             'type' => 'required'
@@ -136,7 +136,7 @@ class VideoController extends Controller
             // Update data video
             $video->update([
                 'category_id' => $request->category_id,
-                'judul' => $request->judul,
+                'judul' => $request->judul ?? 'null',
                 'slug' => Str::slug($request->judul),
                 'deskripsi' => $request->deskripsi ?? '',
                 'video' => $videoPath,

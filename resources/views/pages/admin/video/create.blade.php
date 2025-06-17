@@ -24,7 +24,7 @@
                         <div class="mb-2">
                             <label for="judul" class="form-label">Judul</label>
                             <input type="text" name="judul" id="judul" value="{{ old('judul') }}"
-                                class="form-control" placeholder="Masukan Judul Video" required>
+                                class="form-control" placeholder="Masukan Judul Video">
                             @error('judul')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="mb-2">
-                            <label for="video" class="form-label">Upload Video</label>
+                            <label for="video" class="form-label">Upload Media</label>
                             <input type="file" name="video" id="video" accept="video/*,image/png,image/jpg"
                                 class="form-control">
                             @error('video')
