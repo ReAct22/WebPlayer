@@ -184,8 +184,11 @@
                     video.controls = true;
                     video.autoplay = true;
                     video.style.borderRadius = "20px";
-                    video.innerHTML =
-                        `<source src="${item.src}" type="video/mp4">Browser Anda tidak mendukung video.`;
+                    video.innerHTML = `
+                        <source src="${item.src}" type="video/mp4">
+                        <source src="${item.src.replace('.mp4', '.webm')}" type="video/webm">
+                        Browser Anda tidak mendukung video.
+                    `;
 
                     video.addEventListener("play", () => {
                         new bootstrap.Carousel(carousel).pause();
@@ -203,7 +206,7 @@
                 } else {
                     const img = document.createElement("img");
                     img.src = item.src;
-                    img.className = "w-75";
+                    img.className = "w-100";
                     img.style.borderRadius = "20px";
                     frameWrapper.appendChild(img);
                 }
