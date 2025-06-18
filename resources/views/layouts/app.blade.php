@@ -51,6 +51,20 @@
             max-height: 400px;
             object-fit: contain;
         }
+
+        .carousel-control-next-icon,
+        .carousel-control-prev-icon {
+            filter: brightness(0.1);
+            /* makin kecil makin gelap */
+            border: 2px solid #fff;
+            /* tambahkan border putih */
+            border-radius: 50%;
+            /* opsional, agar tampak lebih bulat */
+            padding: 10px;
+            /* opsional, untuk memberi ruang di dalam */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* opsional, untuk efek backdrop gelap */
+        }
     </style>
 </head>
 

@@ -21,13 +21,15 @@
                         <div class="carousel-inner" id="carouselContent">
                             <!-- Item akan di-load secara dinamis -->
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel"
+                        <button class="carousel-control-prev text-dark" type="button" data-bs-target="#mainCarousel"
                             data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+                        <button class="carousel-control-next text-dark" type="button"
+                            data-bs-target="#mainCarousel"data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+
                         </button>
                     </div>
                 </div>
@@ -81,81 +83,41 @@
 @endsection
 
 @push('script-home')
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const playlistContainer = document.getElementById("playlistContainer");
-
-            const playlistColumn = document.getElementById("playlistColumn");
-
-            const carouselColumn = document.getElementById("carouselColumn");
-
-            document.getElementById("togglePlaylistBtn").addEventListener("click", function() {
-                if (playlistContainer.style.display === "none") {
-                    // Tampilkan Playlist
-                    playlistContainer.style.display = "block";
-                    this.textContent = "Sembunyikan Playlist";
-
-                    // Kembalikan ukuran carousel
-                    carouselColumn.classList.remove("col-md-12");
-
-                    carouselColumn.classList.add("col-md-8");
-
-                    playlistColumn.classList.remove("d-none");
-
-                } else {
-                    // Sembunyikan Playlist
-                    playlistContainer.style.display = "none";
-                    this.textContent = "Tampilkan Playlist";
-
-                    // Perluas ukuran carousel
-                    carouselColumn.classList.remove("col-md-8");
-
-                    carouselColumn.classList.add("col-md-12");
-
-                    playlistColumn.classList.add("d-none");
-
-                }
-            });
-
-            // Kode yang lain sesuai yang Anda punya...
-        });
-    </script> --}}
-
     <script>
         let playlists = {};
-        // let playlists = {};
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Loading daftar kategori
+            const select = document.getElementById('categorySelect');
+            let penyakitId = null;
+
+            // Tambah opsi default "Semua"
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'Semua';
+            select.appendChild(allOption);
+
+            // Ambil kategori dari API
             fetch('{{ url('api/categoris') }}')
                 .then(response => response.json())
                 .then(data => {
-                    const select = document.getElementById('categorySelect');
-                    let penyakitId = null;
-
                     data.forEach(category => {
                         const option = document.createElement('option');
                         option.value = category.id;
                         option.textContent = category.nama;
-
                         select.appendChild(option);
 
-                        // Cek apakah nama nya Penyakit Lain
                         if (category.nama === "Penyakit Lain-lainnya") {
                             penyakitId = category.id;
                         }
                     });
 
-                    // Setelah daftar kategori dan playlist terload, tampilakan penyakit lain
+                    // Setelah kategori dimuat, ambil playlist
                     fetch('{{ url('api/playlist') }}')
                         .then(response => response.json())
                         .then(data => {
                             playlists = data.reduce((grouped, item) => {
                                 const category = `category_${item.category_id}`;
-
-                                if (!grouped[category]) {
-                                    grouped[category] = [];
-                                }
+                                if (!grouped[category]) grouped[category] = [];
 
                                 grouped[category].push({
                                     type: item.type,
@@ -169,202 +131,159 @@
                                 return grouped;
                             }, {});
 
-                            // Setelah playlists siap, tampilkan penyakit lain
-                            if (penyakitId) {
-                                select.value = penyakitId;
-                                loadPlaylist();
-                            }
+                            // Tampilkan semua item default
+                            select.value = "all";
+                            loadPlaylist();
                         })
                         .catch(error => console.error('Gagal memuat playlist!', error));
-
                 })
                 .catch(error => console.error('Gagal memuat kategori!', error));
-
         });
-
-
-        // sisanya sesuai yang Anda punya...
-
 
         function toggleSelect() {
             const select = document.getElementById("categorySelect");
-
             select.style.display = 'block';
+        }
 
+        function getAllItemsFromAllCategories() {
+            const allItems = [];
+            for (const key in playlists) {
+                if (playlists.hasOwnProperty(key)) {
+                    allItems.push(...playlists[key]);
+                }
+            }
+            return allItems;
         }
 
         function loadCarouselWithAllItems(items) {
             const carousel = document.querySelector("#carouselContent").closest('.carousel');
             const carouselContent = document.getElementById("carouselContent");
-
-            // Bersihkan dahulu
             carouselContent.innerHTML = "";
 
             items.forEach((item, index) => {
                 const newItem = document.createElement("div");
-
                 newItem.className = "carousel-item";
-
                 if (index === 0) newItem.classList.add("active");
 
-                // Media (Video/Foto) di tengah
+                // Buat wrapper tengah untuk center
+                const centerWrapper = document.createElement("div");
+                centerWrapper.style.textAlign = "center";
+
+                // Frame mengikuti ukuran konten
+                const frameWrapper = document.createElement("div");
+                frameWrapper.className = "p-2 d-inline-block";
+                frameWrapper.style.border = "1px solid #ddd";
+                frameWrapper.style.borderRadius = "15px";
+                frameWrapper.style.overflow = "hidden";
+                frameWrapper.style.backgroundColor = "#fff";
+                frameWrapper.style.boxShadow = "0 20px 25px rgba(0, 0, 0, 0.3)"; // 👉 backdrop shadow
+
                 if (item.type === 'video') {
                     const video = document.createElement("video");
-
-                    video.className = "d-block w-100";
-
+                    video.className = "w-100";
                     video.controls = true;
+                    video.autoplay = true;
+                    video.style.borderRadius = "20px";
+                    video.innerHTML =
+                        `<source src="${item.src}" type="video/mp4">Browser Anda tidak mendukung video.`;
 
-                    video.autoplay = (index === 0);
-
-                    video.innerHTML = `
-                <source src="${item.src}" type="video/mp4">
-                Browser Anda tidak mendukung video.
-            `;
-
-                    // Saat video mulai diputar -> pause carousel
                     video.addEventListener("play", () => {
-                        if (carousel) {
-                            new bootstrap.Carousel(carousel).pause();
-                        }
+                        new bootstrap.Carousel(carousel).pause();
                     });
 
-                    // Saat video diberhentikan -> resume carousel
                     video.addEventListener("pause", () => {
-                        if (carousel) {
-                            new bootstrap.Carousel(carousel).pause();
-                        }
+                        new bootstrap.Carousel(carousel).pause();
                     });
 
-                    // Saat video selesai -> pindah ke slide selanjutnya
                     video.addEventListener("ended", () => {
-                        if (carousel) {
-                            new bootstrap.Carousel(carousel).next();
-                        }
+                        new bootstrap.Carousel(carousel).next();
                     });
 
-                    newItem.appendChild(video);
+                    frameWrapper.appendChild(video);
                 } else {
-                    // Gambar
                     const img = document.createElement("img");
-
                     img.src = item.src;
-
-                    img.className = "d-block w-100";
-
-                    newItem.appendChild(img);
+                    img.className = "w-75";
+                    img.style.borderRadius = "20px";
+                    frameWrapper.appendChild(img);
                 }
 
+                centerWrapper.appendChild(frameWrapper);
+                newItem.appendChild(centerWrapper);
                 carouselContent.appendChild(newItem);
             });
 
-            // Setelah diberi item, inisialisasi carousel
             const carouselInit = new bootstrap.Carousel(carousel, {
                 interval: false,
                 ride: false,
                 wrap: true
             });
 
-            // Mainkan video saat slide berganti
             carousel.addEventListener('slid.bs.carousel', (event) => {
-                // Hentikan dahulu video yang tengah berjalan
                 const previous = event.from;
                 const prevVideo = carouselContent.children[previous]?.querySelector("video");
-
                 if (prevVideo && !prevVideo.paused) {
                     prevVideo.pause();
                 }
 
-                // Mainkan video yang aktif
                 const active = event.to;
                 const activeVideo = carouselContent.children[active]?.querySelector("video");
-
                 if (activeVideo) {
-                    activeVideo.play().catch((err) => console.error(err)); // kadang autoplay diblock browser
+                    activeVideo.play().catch(err => console.error(err));
                 } else {
-                    // Kalau bukan video (gambar), maka pindah setelah 10 menit
-                    setTimeout(function() {
-                        new bootstrap.Carousel(carousel).next();
-                    }, 10000);
+                    setTimeout(() => new bootstrap.Carousel(carousel).next(), 10000);
                 }
             });
 
-            // Jika slide pertama bukan video, juga diberi timeout
             if (items.length > 0 && items[0].type !== 'video') {
-                setTimeout(function() {
-                    new bootstrap.Carousel(carousel).next();
-                }, 10000);
+                setTimeout(() => new bootstrap.Carousel(carousel).next(), 10000);
             }
         }
 
 
 
 
-
         function loadPlaylist() {
             const categoryId = document.getElementById("categorySelect").value;
-
             const playlist = document.getElementById("playlist");
+            playlist.innerHTML = "";
 
-            playlist.innerHTML = ""; // Bersihkan dahulu
+            let itemsToShow = [];
 
-            const categoryKey = `category_${categoryId}`;
+            if (categoryId === "all") {
+                itemsToShow = getAllItemsFromAllCategories();
+            } else {
+                const categoryKey = `category_${categoryId}`;
+                if (!playlists[categoryKey]) return;
+                itemsToShow = playlists[categoryKey];
+            }
 
-            if (!categoryId || !playlists[categoryKey]) return;
-
-            // Tampilkan daftar media di sebelah
-            playlists[categoryKey].forEach((item, index) => {
-                console.log(item.thumb)
-                // Wrapper untuk thumbnail + judul
+            itemsToShow.forEach((item, index) => {
                 const wrapper = document.createElement("div");
-
                 wrapper.className = "d-flex align-items-center mb-2";
 
-                let thumb;
+                const thumb = document.createElement("img");
+                thumb.src = item.type === "video" ? item.thumb : item.src;
+                thumb.className = "img-fluid playlist-thumbnail me-2";
+                thumb.alt = item.judul || "thumbnail";
 
-                if (item.type === "video") {
-                    thumb = document.createElement("img");
-
-                    thumb.src = item.thumb;
-
-                    thumb.className = "img-fluid playlist-thumbnail me-2";
-
-                    thumb.alt = item.title ? item.title : "thumbnail video";
-
-                } else {
-                    thumb = document.createElement("img");
-
-                    thumb.src = item.src;
-
-                    thumb.className = "img-fluid playlist-thumbnail me-2";
-
-                    thumb.alt = item.title ? item.title : "thumbnail foto";
-
-                }
-
-                // Judul video
                 const title = document.createElement("span");
-
-                // title.textContent = item.judul ? item.judul : "Tanpa judul";
-
                 title.className = "playlist-title";
+                // title.textContent = item.judul || "";
 
-                // Tambahan event click
+                wrapper.appendChild(thumb);
+                wrapper.appendChild(title);
+
                 wrapper.addEventListener("click", () => {
-                    // Pindah ke slide yang sesuai
                     new bootstrap.Carousel(
                         document.querySelector("#carouselContent").closest('.carousel')
                     ).to(index);
                 });
 
-                wrapper.appendChild(thumb);
-                wrapper.appendChild(title);
                 playlist.appendChild(wrapper);
             });
 
-            // Langsung tampil di carousel
-            loadCarouselWithAllItems(playlists[categoryKey]);
-
+            loadCarouselWithAllItems(itemsToShow);
         }
     </script>
 @endpush
