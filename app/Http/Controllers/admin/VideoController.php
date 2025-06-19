@@ -38,40 +38,66 @@ class VideoController extends Controller
             'category_id' => 'required|integer',
             'judul' => 'nullable|string|max:255',
             'deskripsi' => 'nullable|string',
-            'video' => 'required|file|mimes:png,jpg,mp4,mov,avi,mkv|max:204800',
+            'video' => 'required|file|mimes:mp4,mov,avi,mkv,png,jpg,jpeg|max:204800',
             'type' => 'required',
             'thumbnail' => 'nullable|mimes:png,jpg'
         ]);
 
         try {
+            $videoPath = '';
+            $thumbPath = '';
             if ($request->hasFile('video')) {
                 $file = $request->file('video');
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $videoPath = $file->storeAs('videos', $fileName, 'public');
+                $inputPath = $file->getPathname();
+
+                // File output compression
+                $compressedFileName = time() . '_compressed.mp4';
+                $compressedPath = storage_path('app/public/videos/' . $compressedFileName);
+
+                // Compress video using ffmpeg
+                $ffmpeg = "/usr/bin/ffmpeg";
+                $cmd = "$ffmpeg -i $inputPath -vcodec libx264 -crf 23 -acodec aac -strict -2 $compressedPath";
+
+                exec($cmd, $output, $return_var);
+
+                if ($return_var == 0) {
+                    // Compress sukses
+                    $videoPath = 'videos/' . $compressedFileName;
+                } else {
+                    // Compress gagal, fallback ke video asli
+                    $fileName = time() . "_" . $file->getClientOriginalName();
+                    $videoPath = $file->storeAs('videos', $fileName, 'public');
+                }
             }
 
-            if($request->hasFile('thumbnail')){
+            if ($request->hasFile('thumbnail')) {
                 $file = $request->file('thumbnail');
-                $filethumb = time() . '-'. $file->getClientOriginalName();
+                $filethumb = time() . '-' . $file->getClientOriginalName();
                 $thumbPath = $file->storeAs('thumb', $filethumb, 'public');
             }
 
             Video::create([
                 'category_id' => $request->category_id,
-                'judul' => $request->judul ?? 'null',
-                'slug' => Str::slug($request->judul),
-                'deskripsi' => $request->deskripsi ?? 'null',
-                'video' => $videoPath ?? 'null',
-                'user_id' => 0,
-                'type' => $request->type,
-                'thumbnail' => $thumbPath ?? ''
+                'judul'      => $request->judul ?? 'null',
+                'slug'       => Str::slug($request->judul),
+                'deskripsi'  => $request->deskripsi ?? 'null',
+                'video'      => $videoPath ?? 'null',
+                'user_id'    => 0,
+                'type'       => $request->type,
+                'thumbnail'  => $thumbPath ?? '',
             ]);
 
-            return redirect()->route('admin.video.index')->with('success', 'Data berhasil ditambahkan');
+            return redirect()
+                ->route('admin.video.index')
+                ->with('success', 'Data berhasil ditambahkan');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
         }
     }
+
 
 
     /**
@@ -101,48 +127,65 @@ class VideoController extends Controller
             'category_id' => 'required|integer',
             'judul' => 'nullable|string|max:255',
             'deskripsi' => 'nullable|string',
-            'video' => 'nullable|file|mimes:png,jpg,mp4,mov,avi,mkv|max:204800', // video optional
-            'type' => 'required'
+            'video' => 'nullable|file|mimes:mp4,mov,avi,mkv,png,jpg,jpeg|max:204800',
+            'type' => 'required',
+            'thumbnail' => 'nullable|mimes:png,jpg'
         ]);
 
         $video = Video::findOrFail($id);
 
         try {
-            // Cek apakah ada file video baru yang diupload
+            $videoPath = $video->video;
+            $thumbPath = $video->thumbnail;
+
+            // Cek dan proses video baru jika ada
             if ($request->hasFile('video')) {
-                // Hapus file lama jika masih ada
+                // Hapus file lama
                 if ($video->video && Storage::disk('public')->exists($video->video)) {
                     Storage::disk('public')->delete($video->video);
                 }
 
-                // Simpan file video yang baru
                 $file = $request->file('video');
-                $videoPath = $file->store('videos', 'public');
-            } else {
-                // Tetap pakai path lama
-                $videoPath = $video->video;
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $inputPath = $file->getPathname();
+
+                $compressedFileName = time() . '_compressed.mp4';
+                $compressedPath = storage_path('app/public/videos/' . $compressedFileName);
+
+                $ffmpeg = "/usr/bin/ffmpeg";
+                $cmd = "$ffmpeg -i $inputPath -vcodec libx264 -crf 23 -acodec aac -strict -2 $compressedPath";
+
+                exec($cmd, $output, $return_var);
+
+                if ($return_var == 0) {
+                    $videoPath = 'videos/' . $compressedFileName;
+                } else {
+                    // fallback jika gagal kompres
+                    $videoPath = $file->storeAs('videos', $fileName, 'public');
+                }
             }
 
-            if($request->hasFile('thumbnail')){
-                if($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)){
+            // Cek dan proses thumbnail jika ada
+            if ($request->hasFile('thumbnail')) {
+                if ($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)) {
                     Storage::disk('public')->delete($video->thumbnail);
                 }
+
                 $file = $request->file('thumbnail');
-                $thumbPath = $file->store('thumb', 'public');
-            } else {
-                $thumbPath = $video->thumbnail;
+                $filethumb = time() . '-' . $file->getClientOriginalName();
+                $thumbPath = $file->storeAs('thumb', $filethumb, 'public');
             }
 
-            // Update data video
+            // Update ke database
             $video->update([
                 'category_id' => $request->category_id,
                 'judul' => $request->judul ?? 'null',
                 'slug' => Str::slug($request->judul),
-                'deskripsi' => $request->deskripsi ?? '',
+                'deskripsi' => $request->deskripsi ?? 'null',
                 'video' => $videoPath,
-                'user_id' =>  0, // fallback 0 kalau belum login
+                'user_id' => 0,
                 'type' => $request->type,
-                'thumbnail' => $thumbPath ?? 'null'
+                'thumbnail' => $thumbPath ?? 'null',
             ]);
 
             return redirect()->route('admin.video.index')->with('success', 'Video berhasil diperbarui.');
@@ -150,6 +193,7 @@ class VideoController extends Controller
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $th->getMessage());
         }
     }
+
 
 
 
@@ -166,7 +210,7 @@ class VideoController extends Controller
             Storage::disk('public')->delete($video->video);
         }
 
-        if($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)){
+        if ($video->thumbnail && Storage::disk('public')->exists($video->thumbnail)) {
             Storage::disk('public')->delete($video->thumbnail);
         }
 

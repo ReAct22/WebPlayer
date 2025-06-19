@@ -26,7 +26,8 @@
             <h3 class="card-title">Edit Data Video</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.video.update', $video->id) }}" method="POST" enctype="multipart/form-data">
+            <form id="formSubmit" action="{{ route('admin.video.update', $video->id) }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="row">
@@ -70,20 +71,30 @@
                         {{-- Upload Video --}}
                         <div class="mb-2">
                             <label for="video" class="form-label">Upload Media Baru (opsional)</label>
-                            <input type="file" name="video" id="file" accept="*" class="form-control" class="form-control">
+                            <input type="file" name="video" id="file" accept="*" class="form-control"
+                                class="form-control">
                             @error('video')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
 
                         {{-- Preview Video --}}
-                        <div class="mb-2">
-                            <label class="form-label">Preview Video Saat Ini</label><br>
-                            <video width="320" height="240" controls>
-                                <source src="{{ asset('storage/' . $video->video) }}" type="video/mp4">
-                                Browser tidak mendukung pemutar video.
-                            </video>
-                        </div>
+                        @if ($video->type == 'video')
+                            <div class="mb-2">
+                                <label class="form-label">Preview Video Saat Ini</label><br>
+                                <video width="320" height="240" controls>
+                                    <source src="{{ asset('storage/' . $video->video) }}" type="video/mp4">
+                                    Browser tidak mendukung pemutar video.
+                                </video>
+                            </div>
+                        @else
+                            <div class="mb-2">
+                                <label class="form-label">Preview thumbnail Saat Ini</label><br>
+                                <img src="{{ asset('storage/' . $video->video) }}" alt="" width="200"
+                                    height="200" class="img-thumbnail">
+                            </div>
+                        @endif
+
 
                         {{-- Upload Thumbnail --}}
                         <div class="mb-2">
@@ -97,10 +108,9 @@
                         {{-- preview thumbnail --}}
                         <div class="mb-2">
                             <label class="form-label">Preview thumbnail Saat Ini</label><br>
-                            <img src="{{ asset('storage/'. $video->thumbnail) }}" alt="" width="200"
+                            <img src="{{ asset('storage/' . $video->thumbnail) }}" alt="" width="200"
                                 height="200" class="img-thumbnail">
                         </div>
-
                         {{-- Deskripsi --}}
                         <div class="mb-2">
                             <label for="deskripsi" class="form-label">Deskripsi (opsional)</label>
