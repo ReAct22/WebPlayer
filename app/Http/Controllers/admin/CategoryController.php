@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\Barang;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
@@ -23,7 +24,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.category.create');
+        $barangs = Barang::all();
+        return view('pages.admin.category.create', compact('barangs'));
     }
 
     /**
@@ -32,12 +34,11 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'=> "required|string|max:255"
+            'nama'=> "required|string|max:255",
+            'barang_id' => 'required'
         ]);
         try {
-            Category::create([
-                'nama' => $request->nama
-            ]);
+            Category::create($request->all());
 
             return redirect()->route('admin.category.index')->with('success', "Data Berhasil disimpan");
         } catch (\Throwable $th) {
@@ -59,7 +60,8 @@ class CategoryController extends Controller
     public function edit(string $id)
     {
         $category = Category::findOrFail($id);
-        return view('pages.admin.category.edit', compact('category'));
+        $barangs = Barang::all();
+        return view('pages.admin.category.edit', compact('category','barangs'));
     }
 
     /**
@@ -68,15 +70,14 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama' => 'required|string|max:255'
+            'nama' => 'required|string|max:255',
+            'barang_id' => 'required'
         ]);
 
         $category = Category::findOrFail($id);
 
         try {
-            $category->update([
-                'nama' => $request->nama
-            ]);
+            $category->update($request->all());
             return redirect()->route('admin.category.index')->with('success', 'Data Berhasil Diupdate');
         } catch (\Throwable $th) {
             return back()->withInput()->with('error', "Terjadi kesalahan: ".$th->getMessage());

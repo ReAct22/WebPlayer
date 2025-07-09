@@ -42,6 +42,30 @@
                             @enderror
                         </div>
 
+                        <div class="mb-2">
+                            <label for="" class="form-label">Nama Narasumber</label>
+                            <input type="text" name="nama" value="{{$video->nama}}" id="" class="form-control">
+                            @error('nama')
+                                <div class="text-danger">{{$message}}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="" class="form-label">Umur Narasumber</label>
+                            <input type="text" name="umur" id="" class="form-control" value="{{$video->umur}}">
+                            @error('umur')
+                                <div class="text-danger">{{$message}}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="" class="form-label">Perkerjaan Narasumber</label>
+                            <input type="text" name="pekerjaan" id="" class="form-control" value="{{$video->perkerjaan}}">
+                            @error('pekerjaan')
+                                <div class="text-danger">{{$message}}</div>
+                            @enderror
+                        </div>
+
                         {{-- Kategori --}}
                         <div class="mb-2">
                             <label for="category_id" class="form-label">Kategori</label>

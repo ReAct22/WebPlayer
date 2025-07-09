@@ -40,8 +40,12 @@ class VideoController extends Controller
             'deskripsi' => 'nullable|string',
             'video' => 'required|file|mimes:mp4,mov,avi,mkv,png,jpg,jpeg|max:204800',
             'type' => 'required',
-            'thumbnail' => 'nullable|mimes:png,jpg'
+            'thumbnail' => 'nullable|mimes:png,jpg',
+            'nama' => 'required',
+            'umur' => 'required',
+            'pekerjaan' => 'required'
         ]);
+        // dd($request->all());
 
         try {
             $videoPath = '';
@@ -86,6 +90,9 @@ class VideoController extends Controller
                 'user_id'    => 0,
                 'type'       => $request->type,
                 'thumbnail'  => $thumbPath ?? '',
+                'nama' => $request->nama,
+                'umur' => $request->umur,
+                'pekerjaan' => $request->pekerjaan
             ]);
 
             return redirect()
@@ -129,7 +136,10 @@ class VideoController extends Controller
             'deskripsi' => 'nullable|string',
             'video' => 'nullable|file|mimes:mp4,mov,avi,mkv,png,jpg,jpeg|max:204800',
             'type' => 'required',
-            'thumbnail' => 'nullable|mimes:png,jpg'
+            'thumbnail' => 'nullable|mimes:png,jpg',
+            'nama' => 'required',
+            'umur' => 'required',
+            'pekerjaan' => 'required'
         ]);
 
         $video = Video::findOrFail($id);
@@ -186,6 +196,9 @@ class VideoController extends Controller
                 'user_id' => 0,
                 'type' => $request->type,
                 'thumbnail' => $thumbPath ?? 'null',
+                'nama' => $request->nama,
+                'umur' => $request->umur,
+                ''
             ]);
 
             return redirect()->route('admin.video.index')->with('success', 'Video berhasil diperbarui.');

@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Tambah Data Category')
+@section('title', 'Tambah Data Barang')
 
 @section('content')
     @if (session('error'))
@@ -12,28 +12,18 @@
     @endif
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Tambah Data Category</h3>
+            <h3 class="card-title">Tambah Data Barang</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.category.store') }}" method="POST">
+            <form action="{{route('admin.barang.store')}}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-sm-4">
-                        <div class="mb-3">
-                            <label for="" class="form-label">Pilih produk</label>
-                            <select name="barang_id" class="form-control" id="">
-                                <option value="">pilih data produk</option>
-                                @foreach ($barangs as $barang)
-                                    <option value="{{$barang->id}}">{{$barang->nama}}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama</label>
                             <input type="text" name="nama" class="form-control" id="nama"
                                 placeholder="Masukan Nama Category" required>
                         </div>
-
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                     </div>
                 </div>

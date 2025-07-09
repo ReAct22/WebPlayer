@@ -12,19 +12,33 @@
     @endif
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Tambah Data Category</h3>
+            <h3 class="card-title">Edit Category</h3>
         </div>
         <div class="card-body">
-            <form action="{{route('admin.category.update', $category->id)}}" method="POST">
+            <form action="{{ route('admin.category.update', $category->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="mb-3">
+                            <label for="" class="form-label">Pilih produk</label>
+                            <select name="produk_id" class="form-control" id="">
+                                @if ($category->barang_id)
+                                    <option value="{{ $category->barang_id }}">{{ $category->barang->nama }}</option>
+                                @else
+                                    <option value="">Pilih Produk</option>
+                                @endif
+                                @foreach ($barangs as $barang)
+                                    <option value="{{ $barang->id }}">{{ $barang->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="nama" class="form-label">Nama</label>
                             <input type="text" name="nama" class="form-control" id="nama"
-                                value="{{$category->nama}}" required>
+                                value="{{ $category->nama }}" required>
                         </div>
+
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                     </div>
                 </div>

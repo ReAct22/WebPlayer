@@ -2,11 +2,11 @@
 @section('title', 'Data Category')
 @section('content')
     <div class="mb-2">
-        <a href="{{ route('admin.category.create') }}" class="btn btn-success btn-sm">Add Data</a>
+        <a href="{{ route('admin.barang.create') }}" class="btn btn-success btn-sm">Add Data</a>
     </div>
-    @if (session('success'))
+    @if (session('message'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            {{ session('message') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -15,7 +15,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Daftar Kategori</h3>
+            <h3 class="card-title">Daftar Barag</h3>
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
@@ -23,25 +23,19 @@
                 <thead>
                     <tr>
                         <th>Kode</th>
-                        <th>Produk</th>
                         <th>Nama</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($categories as $category)
+                    @forelse ($barangs as $barang)
                         <tr>
-                            <td>{{$category->id}}</td>
-                            @if ($category->barang_id)
-                                <td>{{$category->barang->nama}}</td>
-                            @else
-                                <td>Belom ada produknya</td>
-                            @endif
-                            <td>{{$category->nama}}</td>
+                            <td>{{$barang->id}}</td>
+                            <td>{{$barang->nama}}</td>
                             <td>
-                                <a href="{{route('admin.category.edit', $category->id)}}" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="{{route('admin.barang.edit', $barang->id)}}" class="btn btn-sm btn-primary">Edit</a>
                                 {{-- <a href="#" class="btn btn-sm btn-danger">Hapus</a>4 --}}
-                                <form action="{{route('admin.category.destroy', $category->id)}}" method="POST"
+                                <form action="{{route('admin.barang.destroy', $barang->id)}}" method="POST"
                                     onsubmit="return confirm('Apa anda yakin ingin menghapus data ini?')">
                                     @csrf
                                     @method('DELETE')

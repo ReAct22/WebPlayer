@@ -1,83 +1,41 @@
+
 <!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Testimoni Laser</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebPlayer</title>
+    <link rel="stylesheet" href="{{asset('assets/bootstrap/css/bootstrap.min.css')}}" />
+    <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
     <style>
-        body {
-            background-image: url("{{ asset('images/bg-image.jpg') }}");
-
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
+      body {
+        background-image: url("assets/image/background.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 100%;
+      }
+      .video {
+        border-radius: 20px;
+        width: 100%;
+      }
+      @media screen and (max-width: 600px) {
+        .video {
+          width: 100%;
         }
-
-        /* .hamburger {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            z-index: 1050;
-        } */
-
-        #categorySelect {
-            display: none;
-            /* position: absolute; */
-            top: 50px;
-            right: 10px;
-            z-index: 1040;
-            width: 200px;
+      }
+      @media screen and (max-width: 400px) {
+        .video {
+          width: 100%;
         }
-
-        .playlist-thumbnail {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .playlist-thumbnail:hover {
-            transform: scale(1.03);
-        }
-
-        .carousel-item video,
-        .carousel-item img {
-            max-height: 400px;
-            object-fit: contain;
-        }
-
-        .carousel-control-next-icon,
-        .carousel-control-prev-icon {
-            filter: brightness(0.1);
-            /* makin kecil makin gelap */
-            border: 2px solid #fff;
-            /* tambahkan border putih */
-            border-radius: 50%;
-            /* opsional, agar tampak lebih bulat */
-            padding: 10px;
-            /* opsional, untuk memberi ruang di dalam */
-            background-color: rgba(0, 0, 0, 0.5);
-            /* opsional, untuk efek backdrop gelap */
-        }
+      }
     </style>
-</head>
-
-<body>
+  </head>
+  <body>
     @yield('content')
 
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @stack('script-home')
-
-
-</body>
-
+    <script src="{{asset('assets/bootstrap/js/bootstrap.min.js')}}"></script>
+    <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
+    @stack('scripts')
+  </body>
 </html>

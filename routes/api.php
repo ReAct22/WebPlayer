@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\BarangController;
 use App\Http\Controllers\api\CategorisController;
 use App\Http\Controllers\api\PlaylistController;
 use Illuminate\Http\Request;
@@ -11,3 +12,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/playlist', [PlaylistController::class, 'index']);
 Route::get('/categoris', [CategorisController::class, 'index']);
+Route::get('/barangs', [BarangController::class, 'index']);

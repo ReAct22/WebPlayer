@@ -18,7 +18,10 @@ class Video extends Model
         'video',
         'user_id',
         'type',
-        'thumbnail'
+        'thumbnail',
+        'nama',
+        'umur',
+        'perkerjaan'
     ];
 
     public function category(): BelongsTo
