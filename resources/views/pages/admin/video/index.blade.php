@@ -24,7 +24,7 @@
                             <td><img src="{{ asset('storage/' . $video->thumbnail) }}" alt="" width="130"
                                     height="129"></td>
                             {{-- <td>{{ $video->deskripsi }}</td> --}}
-                            <td>{{ $video->category->nama }}</td>
+                            <td>{{ optional($video->category)->nama ?? 'Kategori Tidak Ditemukan' }}</td>
                             <td>
                                 <a href="{{ route('admin.video.edit', $video->id) }}"
                                     class="btn btn-sm btn-warning mb-2">Edit</a>
