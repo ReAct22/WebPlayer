@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 
 class CategorisController extends Controller
 {
-    public function index(){
-        $categoris = Category::all();
+    public function index($id){
+        $categoris = Category::where('barang_id', $id)->get();
         return response()->json($categoris);
     }
 }

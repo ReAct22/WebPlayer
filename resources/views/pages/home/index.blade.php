@@ -31,7 +31,8 @@
 
             <div class="col-lg-4 mx-auto">
                 <div class="d-flex justify-content-center">
-                    <a href="{{route('home')}}"><img src="assets/image/logo gogomall.svg" style="max-width: 75%" alt="Logo" /></a>
+                    <a href="{{ route('home') }}"><img src="assets/image/logo gogomall.svg" style="max-width: 75%"
+                            alt="Logo" /></a>
                 </div>
 
                 <!-- Form Select -->
@@ -85,43 +86,51 @@
                 });
 
             selectProduk.addEventListener("change", function() {
-                selectPenyakit.disabled = !this.value;
+                const barangId = this.value;
+                // console.log(barangId)
+                selectPenyakit.disabled = !barangId;
+
+                // Bersihkan opsi sebelumnya
+                selectPenyakit.innerHTML = '<option value="all">Semua</option>';
+
+                if (barangId) {
+                    // Load kategori berdasarkan barang ID
+                    fetch(`api/categoris/${barangId}`)
+                        .then(res => res.json())
+                        .then(dataKategori => {
+                            dataKategori.forEach(item => {
+                                const option = document.createElement("option");
+                                option.value = item.id;
+                                option.textContent = item.nama;
+                                selectPenyakit.appendChild(option);
+                            });
+
+                            return fetch("api/playlist");
+                        })
+                        .then(res => res.json())
+                        .then(dataPlaylist => {
+                            allVideos = dataPlaylist;
+
+                            if (allVideos.length > 0) {
+                                const latest = allVideos[allVideos.length - 1];
+                                setMainContent(latest);
+                            }
+
+                            // Group berdasarkan penyakit
+                            playlists = {};
+                            dataPlaylist.forEach(item => {
+                                const key = `penyakit_${item.category_id}`;
+                                if (!playlists[key]) playlists[key] = [];
+                                playlists[key].push(item);
+                            });
+
+                            loadPlaylist();
+                        })
+                        .catch(err => console.error("Gagal memuat kategori/playlist:", err));
+                }
             });
-
-            // Load Penyakit dan Playlist
-            fetch("api/categoris")
-                .then(res => res.json())
-                .then(dataKategori => {
-                    dataKategori.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.id;
-                        option.textContent = item.nama;
-                        selectPenyakit.appendChild(option);
-                    });
-
-                    return fetch("api/playlist");
-                })
-                .then(res => res.json())
-                .then(dataPlaylist => {
-                    allVideos = dataPlaylist;
-
-                    // Tampilkan video terbaru ke tampilan utama
-                    if (allVideos.length > 0) {
-                        const latest = allVideos[allVideos.length - 1];
-                        setMainContent(latest);
-                    }
-
-                    // Group berdasarkan penyakit
-                    dataPlaylist.forEach(item => {
-                        const key = `penyakit_${item.category_id}`;
-                        if (!playlists[key]) playlists[key] = [];
-                        playlists[key].push(item);
-                    });
-
-                    loadPlaylist();
-                })
-                .catch(err => console.error("Gagal memuat:", err));
         });
+
 
         function loadPlaylist() {
             const penyakitId = document.getElementById("penyakit").value;

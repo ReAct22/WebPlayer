@@ -11,5 +11,5 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::get('/playlist', [PlaylistController::class, 'index']);
-Route::get('/categoris', [CategorisController::class, 'index']);
+Route::get('/categoris/{id}', [CategorisController::class, 'index']);
 Route::get('/barangs', [BarangController::class, 'index']);
