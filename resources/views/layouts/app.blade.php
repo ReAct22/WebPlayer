@@ -29,6 +29,37 @@
           width: 100%;
         }
       }
+
+       .video-js.vjs-theme-youtube {
+        color: #fff;
+        font-family: 'Roboto', sans-serif;
+        background-color: #000;
+    }
+
+    .vjs-theme-youtube .vjs-big-play-button {
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #000;
+        border-radius: 50%;
+        font-size: 2em;
+    }
+
+    .vjs-theme-youtube .vjs-control-bar {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        padding-top: 25px;
+        height: 0;
+    }
+
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+    }
     </style>
   </head>
   <body>

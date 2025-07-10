@@ -3,19 +3,21 @@
     <div class="container">
         <div class="row p-4 m-3">
             <div class="col-sm-7 col-lg-8">
-                <video id="my-video" class="video-js video vjs-theme-city mb-3" controls preload="auto" width="640"
-                    height="264" poster="MY_VIDEO_POSTER.jpg" data-setup="{}">
-                    <source src="" type="video/mp4" />
-                </video>
+                <div class="video-container mb-3">
+                    <video id="my-video" class="video-js vjs-theme-youtube vjs-big-play-centered" controls preload="auto"
+                        poster="MY_VIDEO_POSTER.jpg" data-setup='{}'>
+                        <source src="" type="video/mp4" />
+                    </video>
+                </div>
 
                 <!-- Tombol Speed -->
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <strong>Speed:</strong>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="setSpeed(1)">1x</button>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="setSpeed(2)">2x</button>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="setSpeed(5)">5x</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="setSpeed(10)">10x</button>
-                </div>
+                </div> --}}
 
 
                 <img id="main-image" class="w-100 mb-3 d-none" src="" alt="Image Preview" />
@@ -130,17 +132,22 @@
             playlistDiv.innerHTML = "";
 
             if (penyakitId === "all") {
-                allVideos.forEach(item => playlistDiv.appendChild(createVideoItem(item)));
+                // Ambil 5 data terakhir
+                const latestFive = allVideos.slice(-5).reverse(); // Reverse agar urutan terbaru di atas
+                latestFive.forEach(item => playlistDiv.appendChild(createVideoItem(item)));
+
                 playlistDiv.style.display = "block";
                 listDiv.style.display = "none";
             } else {
                 const key = `penyakit_${penyakitId}`;
                 const filtered = playlists[key] || [];
+
                 filtered.forEach(item => listDiv.appendChild(createVideoItem(item)));
                 playlistDiv.style.display = "none";
                 listDiv.style.display = "block";
             }
         }
+
 
         function createVideoItem(item) {
             const wrapper = document.createElement("div");
@@ -150,7 +157,7 @@
             const thumb = document.createElement("img");
             thumb.src = `storage/${item.thumbnail}` || "{{ asset('images/images.jpg') }}";
             thumb.className = "img-fluid me-2";
-            thumb.style.maxWidth = "80px";
+            thumb.style.maxWidth = "150px";
 
             const title = document.createElement("span");
             title.textContent = item.judul;
@@ -188,7 +195,8 @@
 
             document.getElementById("judul-video").textContent = item.judul || "Judul Tidak Diketahui";
             document.getElementById("deskripsi-video").textContent = item.deskripsi || "Deskripsi tidak tersedia";
-            document.getElementById("nama-video").textContent = `${item.nama} (${item.perkerjaan}) ${item.umur} tahun` || "Nama (Pekerjaan), umur";
+            document.getElementById("nama-video").textContent = `${item.nama} (${item.perkerjaan}) ${item.umur} tahun` ||
+                "Nama (Pekerjaan), umur";
         }
 
         function setSpeed(rate) {
