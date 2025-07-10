@@ -65,152 +65,165 @@
     </div>
 @endsection
 @push('scripts')
-    <script>
-        let playlists = {};
-        let allVideos = [];
+<script>
+    let playlists = {};
+    let allVideos = [];
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const selectProduk = document.getElementById("produk");
-            const selectPenyakit = document.getElementById("penyakit");
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectProduk = document.getElementById("produk");
+        const selectPenyakit = document.getElementById("penyakit");
 
-            // Load Produk
-            fetch("api/barangs")
-                .then(res => res.json())
-                .then(dataProduk => {
-                    dataProduk.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.id;
-                        option.textContent = item.nama;
-                        selectProduk.appendChild(option);
-                    });
+        // Load Produk
+        fetch("api/barangs")
+            .then(res => res.json())
+            .then(dataProduk => {
+                dataProduk.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.id;
+                    option.textContent = item.nama;
+                    selectProduk.appendChild(option);
                 });
-
-            selectProduk.addEventListener("change", function() {
-                const barangId = this.value;
-                // console.log(barangId)
-                selectPenyakit.disabled = !barangId;
-
-                // Bersihkan opsi sebelumnya
-                selectPenyakit.innerHTML = '<option value="all">Semua</option>';
-
-                if (barangId) {
-                    // Load kategori berdasarkan barang ID
-                    fetch(`api/categoris/${barangId}`)
-                        .then(res => res.json())
-                        .then(dataKategori => {
-                            dataKategori.forEach(item => {
-                                const option = document.createElement("option");
-                                option.value = item.id;
-                                option.textContent = item.nama;
-                                selectPenyakit.appendChild(option);
-                            });
-
-                            return fetch("api/playlist");
-                        })
-                        .then(res => res.json())
-                        .then(dataPlaylist => {
-                            allVideos = dataPlaylist;
-
-                            if (allVideos.length > 0) {
-                                const latest = allVideos[allVideos.length - 1];
-                                setMainContent(latest);
-                            }
-
-                            // Group berdasarkan penyakit
-                            playlists = {};
-                            dataPlaylist.forEach(item => {
-                                const key = `penyakit_${item.category_id}`;
-                                if (!playlists[key]) playlists[key] = [];
-                                playlists[key].push(item);
-                            });
-
-                            loadPlaylist();
-                        })
-                        .catch(err => console.error("Gagal memuat kategori/playlist:", err));
-                }
             });
+
+        // Ambil data playlist saat halaman dimuat pertama kali
+        fetch("api/playlist")
+            .then(res => res.json())
+            .then(dataPlaylist => {
+                allVideos = dataPlaylist;
+
+                // Tampilkan video terbaru ke tampilan utama
+                if (allVideos.length > 0) {
+                    const latest = allVideos[allVideos.length - 1];
+                    setMainContent(latest);
+                }
+
+                loadPlaylist(); // load 5 video terbaru pertama kali
+            });
+
+        // Event saat produk dipilih
+        selectProduk.addEventListener("change", function () {
+            const barangId = this.value;
+            selectPenyakit.disabled = !barangId;
+
+            // Bersihkan kategori sebelumnya
+            selectPenyakit.innerHTML = '<option value="all">Semua</option>';
+
+            if (barangId) {
+                // Load kategori berdasarkan barang ID
+                fetch(`api/categoris/${barangId}`)
+                    .then(res => res.json())
+                    .then(dataKategori => {
+                        dataKategori.forEach(item => {
+                            const option = document.createElement("option");
+                            option.value = item.id;
+                            option.textContent = item.nama;
+                            selectPenyakit.appendChild(option);
+                        });
+
+                        return fetch("api/playlist");
+                    })
+                    .then(res => res.json())
+                    .then(dataPlaylist => {
+                        allVideos = dataPlaylist;
+
+                        if (allVideos.length > 0) {
+                            const latest = allVideos[allVideos.length - 1];
+                            setMainContent(latest);
+                        }
+
+                        // Group berdasarkan penyakit
+                        playlists = {};
+                        dataPlaylist.forEach(item => {
+                            const key = `penyakit_${item.category_id}`;
+                            if (!playlists[key]) playlists[key] = [];
+                            playlists[key].push(item);
+                        });
+
+                        loadPlaylist();
+                    })
+                    .catch(err => console.error("Gagal memuat kategori/playlist:", err));
+            }
+        });
+    });
+
+    function loadPlaylist() {
+        const penyakitId = document.getElementById("penyakit").value;
+        const listDiv = document.getElementById("list_playlist");
+        const playlistDiv = document.getElementById("playlist");
+
+        listDiv.innerHTML = "";
+        playlistDiv.innerHTML = "";
+
+        if (penyakitId === "all" || !penyakitId) {
+            const latestFive = allVideos.slice(-5).reverse(); // Ambil 5 data terakhir dan tampilkan dari terbaru
+            latestFive.forEach(item => playlistDiv.appendChild(createVideoItem(item)));
+
+            playlistDiv.style.display = "block";
+            listDiv.style.display = "none";
+        } else {
+            const key = `penyakit_${penyakitId}`;
+            const filtered = playlists[key] || [];
+            filtered.forEach(item => listDiv.appendChild(createVideoItem(item)));
+
+            playlistDiv.style.display = "none";
+            listDiv.style.display = "block";
+        }
+    }
+
+    function createVideoItem(item) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "d-flex align-items-center mb-2 pointer";
+        wrapper.style.cursor = "pointer";
+
+        const thumb = document.createElement("img");
+        thumb.src = `storage/${item.thumbnail}` || "{{ asset('images/images.jpg') }}";
+        thumb.className = "img-fluid me-2";
+        thumb.style.maxWidth = "150px";
+
+        const title = document.createElement("span");
+        title.textContent = item.judul;
+        title.className = "text-dark";
+
+        wrapper.appendChild(thumb);
+        wrapper.appendChild(title);
+
+        wrapper.addEventListener("click", function () {
+            setMainContent(item);
         });
 
+        return wrapper;
+    }
 
-        function loadPlaylist() {
-            const penyakitId = document.getElementById("penyakit").value;
-            const listDiv = document.getElementById("list_playlist");
-            const playlistDiv = document.getElementById("playlist");
+    function setMainContent(item) {
+        const video = document.getElementById("my-video");
+        const videoSource = video.querySelector("source");
+        const image = document.getElementById("main-image");
 
-            listDiv.innerHTML = "";
-            playlistDiv.innerHTML = "";
+        if (item.type === 'video') {
+            video.classList.remove("d-none");
+            image.classList.add("d-none");
 
-            if (penyakitId === "all") {
-                // Ambil 5 data terakhir
-                const latestFive = allVideos.slice(-5).reverse(); // Reverse agar urutan terbaru di atas
-                latestFive.forEach(item => playlistDiv.appendChild(createVideoItem(item)));
+            videoSource.src = `storage/${item.video}` || "";
+            video.poster = `storage/${item.thumbnail}` || "{{ asset('images/images.jpg') }}";
+            video.load();
 
-                playlistDiv.style.display = "block";
-                listDiv.style.display = "none";
-            } else {
-                const key = `penyakit_${penyakitId}`;
-                const filtered = playlists[key] || [];
+        } else if (item.type === 'image') {
+            video.classList.add("d-none");
+            image.classList.remove("d-none");
 
-                filtered.forEach(item => listDiv.appendChild(createVideoItem(item)));
-                playlistDiv.style.display = "none";
-                listDiv.style.display = "block";
-            }
+            image.src = `storage/${item.video}` || "{{ asset('images/images.jpg') }}";
         }
 
+        document.getElementById("judul-video").textContent = item.judul || "Judul Tidak Diketahui";
+        document.getElementById("deskripsi-video").textContent = item.deskripsi || "Deskripsi tidak tersedia";
+        document.getElementById("nama-video").textContent = `${item.nama} (${item.perkerjaan}) ${item.umur} tahun` ||
+            "Nama (Pekerjaan), umur";
+    }
 
-        function createVideoItem(item) {
-            const wrapper = document.createElement("div");
-            wrapper.className = "d-flex align-items-center mb-2 pointer";
-            wrapper.style.cursor = "pointer";
-
-            const thumb = document.createElement("img");
-            thumb.src = `storage/${item.thumbnail}` || "{{ asset('images/images.jpg') }}";
-            thumb.className = "img-fluid me-2";
-            thumb.style.maxWidth = "150px";
-
-            const title = document.createElement("span");
-            title.textContent = item.judul;
-            title.className = "text-dark";
-
-            wrapper.appendChild(thumb);
-            wrapper.appendChild(title);
-
-            wrapper.addEventListener("click", function() {
-                setMainContent(item);
-            });
-
-            return wrapper;
-        }
-
-        function setMainContent(item) {
-            const video = document.getElementById("my-video");
-            const videoSource = video.querySelector("source");
-            const image = document.getElementById("main-image");
-
-            if (item.type === 'video') {
-                video.classList.remove("d-none");
-                image.classList.add("d-none");
-
-                videoSource.src = `storage/${item.video}` || "";
-                video.poster = `storage/${item.thumbnail}` || "{{ asset('images/images.jpg') }}";
-                video.load();
-
-            } else if (item.type === 'image') {
-                video.classList.add("d-none");
-                image.classList.remove("d-none");
-
-                image.src = `storage/${item.video}` || "{{ asset('images/images.jpg') }}";
-            }
-
-            document.getElementById("judul-video").textContent = item.judul || "Judul Tidak Diketahui";
-            document.getElementById("deskripsi-video").textContent = item.deskripsi || "Deskripsi tidak tersedia";
-            document.getElementById("nama-video").textContent = `${item.nama} (${item.perkerjaan}) ${item.umur} tahun` ||
-                "Nama (Pekerjaan), umur";
-        }
-
-        function setSpeed(rate) {
-            const video = document.getElementById("my-video");
-            video.playbackRate = rate;
-        }
-    </script>
+    function setSpeed(rate) {
+        const video = document.getElementById("my-video");
+        video.playbackRate = rate;
+    }
+</script>
 @endpush
+
