@@ -43,7 +43,7 @@ class VideoController extends Controller
             'thumbnail' => 'nullable|mimes:png,jpg',
             'nama' => 'required',
             'umur' => 'required',
-            'pekerjaan' => 'required'
+            'perkerjaan' => 'required'
         ]);
         // dd($request->all());
 
@@ -92,7 +92,7 @@ class VideoController extends Controller
                 'thumbnail'  => $thumbPath ?? '',
                 'nama' => $request->nama,
                 'umur' => $request->umur,
-                'pekerjaan' => $request->pekerjaan
+                'perkerjaan' => $request->perkerjaan
             ]);
 
             return redirect()
@@ -139,7 +139,7 @@ class VideoController extends Controller
             'thumbnail' => 'nullable|mimes:png,jpg',
             'nama' => 'required',
             'umur' => 'required',
-            'pekerjaan' => 'required'
+            'perkerjaan' => 'required'
         ]);
 
         $video = Video::findOrFail($id);
@@ -198,7 +198,7 @@ class VideoController extends Controller
                 'thumbnail' => $thumbPath ?? 'null',
                 'nama' => $request->nama,
                 'umur' => $request->umur,
-                ''
+                'perkerjaan' => $request->perkerjaan
             ]);
 
             return redirect()->route('admin.video.index')->with('success', 'Video berhasil diperbarui.');

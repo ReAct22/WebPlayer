@@ -48,8 +48,8 @@
 
                         <div class="mb-2">
                             <label for="" class="form-label">Perkerjaan Narasumber</label>
-                            <input type="text" name="pekerjaan" id="" class="form-control" placeholder="Masukan Perkerjaan ">
-                            @error('pekerjaan')
+                            <input type="text" name="perkerjaan" id="" class="form-control" placeholder="Masukan Perkerjaan ">
+                            @error('perkerjaan')
                                 <div class="text-danger">{{$message}}</div>
                             @enderror
                         </div>
