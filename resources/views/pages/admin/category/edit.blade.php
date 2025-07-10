@@ -22,7 +22,7 @@
                     <div class="col-sm-4">
                         <div class="mb-3">
                             <label for="" class="form-label">Pilih produk</label>
-                            <select name="produk_id" class="form-control" id="">
+                            <select name="barang_id" class="form-control" id="">
                                 @if ($category->barang_id)
                                     <option value="{{ $category->barang_id }}">{{ $category->barang->nama }}</option>
                                 @else
