@@ -33,7 +33,7 @@
                         <tr>
                             <td>{{$category->id}}</td>
                             @if ($category->barang_id)
-                                <td>{{$category->barang->nama}}</td>
+                                <td>{{$category->barang->nama ?? 'Data barang tidak ada'}}</td>
                             @else
                                 <td>Belom ada produknya</td>
                             @endif
