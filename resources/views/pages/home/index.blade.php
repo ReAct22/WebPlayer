@@ -31,7 +31,7 @@
 
             <div class="col-lg-4 mx-auto">
                 <div class="d-flex justify-content-center">
-                    <img src="assets/image/logo gogomall.svg" style="max-width: 75%" alt="Logo" />
+                    <a href="{{route('home')}}"><img src="assets/image/logo gogomall.svg" style="max-width: 75%" alt="Logo" /></a>
                 </div>
 
                 <!-- Form Select -->
