@@ -185,6 +185,7 @@
         title.textContent = item.judul;
         title.className = "text-dark";
         title.style.fontSize = "14px";
+        title.style.fontWeight = "bold";
 
         wrapper.appendChild(thumb);
         wrapper.appendChild(title);
