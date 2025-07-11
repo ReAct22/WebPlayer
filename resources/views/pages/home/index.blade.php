@@ -54,7 +54,7 @@
                 </div>
 
                 <!-- Latest Videos -->
-                <div class="card mt-3">
+                <div class="card mt-3" id="playlistid">
                     <div class="card-body">
                         <h4 class="text-dark">Latest Videos</h4>
                         <div class="mb-2" id="playlist" style="max-height: 300px; overflow-y: auto;"></div>
@@ -150,6 +150,7 @@
         const penyakitId = document.getElementById("penyakit").value;
         const listDiv = document.getElementById("list_playlist");
         const playlistDiv = document.getElementById("playlist");
+        const playlistid = document.getElementById("playlistid");
 
         listDiv.innerHTML = "";
         playlistDiv.innerHTML = "";
@@ -158,14 +159,14 @@
             const latestFive = allVideos.slice(-5).reverse(); // Ambil 5 data terakhir dan tampilkan dari terbaru
             latestFive.forEach(item => playlistDiv.appendChild(createVideoItem(item)));
 
-            playlistDiv.style.display = "block";
+            playlistid.style.display = "block";
             listDiv.style.display = "none";
         } else {
             const key = `penyakit_${penyakitId}`;
             const filtered = playlists[key] || [];
             filtered.forEach(item => listDiv.appendChild(createVideoItem(item)));
 
-            playlistDiv.style.display = "none";
+            playlistid.style.display = "none";
             listDiv.style.display = "block";
         }
     }
@@ -183,6 +184,7 @@
         const title = document.createElement("span");
         title.textContent = item.judul;
         title.className = "text-dark";
+        title.style.fontSize = "14px";
 
         wrapper.appendChild(thumb);
         wrapper.appendChild(title);
